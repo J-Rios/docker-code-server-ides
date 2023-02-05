@@ -1,0 +1,8 @@
+{
+    "extensions.autoUpdate": false,
+    "workbench.startupEditor": "newUntitledFile",
+    "window.zoomLevel": -1,
+    "workbench.colorTheme": "Default Dark+",
+    "python.pythonPath": "/usr/bin/python3",
+    "python.showStartPage": false
+}

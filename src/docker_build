@@ -15,9 +15,9 @@ if [ $# -lt 2 ]; then
     echo ""
     echo "You need to provide a image name and Dockerfile to build."
     echo "Examples:"
-    echo "  docker_install arm_c_cpp ../images/arm_c_cpp/"
-    echo "  docker_install x86_64_c_cpp ../images/x86_64_c_cpp/"
-    echo "  docker_install python ../images/python/"
+    echo "  docker_build arm_c_cpp ../images/arm_c_cpp/"
+    echo "  docker_build x86_64_c_cpp ../images/x86_64_c_cpp/"
+    echo "  docker_build python ../images/python/"
     echo ""
     exit 1
 fi

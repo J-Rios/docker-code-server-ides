@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Description:
-# Remove specified Docker Image.
+# Remove a specified Docker Image.
 #
 
 ###############################################################################
@@ -18,8 +18,8 @@ if [ ${#docker_image_name[@]} -eq 0 ]; then
     echo ""
     echo "You need to provide a Docker Image ID to remove"
     echo "Examples:"
-    echo "  docker_uninstall a_image_name"
-    echo "  docker_uninstall a_image_name another_one why_not_other"
+    echo "  docker_remove a_image_name"
+    echo "  docker_remove a_image_name another_one why_not_other"
     echo ""
     exit 1
 fi
@@ -50,7 +50,7 @@ echo "Removing dangling images"
 docker rmi -f $(docker images --filter "dangling=true" -q --no-trunc)
 
 echo ""
-echo "Image/s uninstalled"
+echo "Image/s removed"
 echo ""
 
 exit 0

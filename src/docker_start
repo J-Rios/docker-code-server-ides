@@ -8,19 +8,18 @@
 
 # Get Arguments
 IMAGE_NAME="$1"
-USER="$2"
-WORKSPACE_DIR="$3"
-CODE_SERVER_PASSWORD="$4"
+WORKSPACE_DIR="$2"
+CODE_SERVER_PASSWORD="$3"
 
 # Check if correct number of arguments has been provided
-if [ $# -lt 4 ]; then
+if [ $# -lt 3 ]; then
     echo ""
     echo "You need to provide image name, user name, projects workspace to"
     echo "mount and code-server password to use."
     echo "Examples:"
-    echo "  docker_start arm_c_cpp developer ~/my_projects mypassword1234"
-    echo "  docker_start x86_64_c_cpp developer ~/my_projects mypassword1234"
-    echo "  docker_start python developer ~/my_projects mypassword1234"
+    echo "  docker_start arm_c_cpp ~/my_projects mypassword1234"
+    echo "  docker_start x86_64_c_cpp ~/my_projects mypassword1234"
+    echo "  docker_start python ~/my_projects mypassword1234"
     echo ""
     exit 1
 fi
@@ -28,16 +27,15 @@ fi
 ###############################################################################
 
 # Mount points
-WORKSPACE_DIR_TO_MOUNT="${PWD}/.."
-PROJECTS_MOUNT_POINT="/home/${USER}/${WORKSPACE_DIR}"
-CODE_SETTINGS_TO_MOUNT="${PWD}/code_config/settings.json"
-CODE_SERVER_USER_DATA_DIR="/home/${USER}/.local/share/code-server"
+WORKSPACE_MOUNT_POINT="/home/user/${WORKSPACE_DIR}"
+CODE_SETTINGS_TO_MOUNT="${PWD}/ides/${IMAGE_NAME}/code_config/settings.json"
+CODE_SERVER_USER_DATA_DIR="/home/user/.local/share/code-server"
 CODE_SETTINGS_MOUNT_POINT="${CODE_SERVER_USER_DATA_DIR}/User/settings.json"
 
 ###############################################################################
 
 # Allow root user to run GUI Applications (connect to X server)
-xhost +local:root
+#xhost +local:root
 
 # Launch the image container
 docker run -it --network="host" --privileged --rm \
@@ -45,7 +43,7 @@ docker run -it --network="host" --privileged --rm \
     --env="PASSWORD=${CODE_SERVER_PASSWORD}" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     --volume="/dev:/dev" \
-    --volume="${PROJECTS_DIR_TO_MOUNT}:${PROJECTS_MOUNT_POINT}" \
+    --volume="${WORKSPACE_DIR}:${WORKSPACE_MOUNT_POINT}" \
     --volume="${CODE_SETTINGS_TO_MOUNT}:${CODE_SETTINGS_MOUNT_POINT}" \
     $IMAGE_NAME
 
