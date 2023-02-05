@@ -1,2 +1,17 @@
 # docker-code-server-ides
-Docker Images for different kind of code-server based Integrated Development Environment.
+
+Docker Images to create different kind of [code-server](https://github.com/coder/code-server) based **Integrated Development Environments (IDEs)** for specific software development fields and programming languages (C/C++, Python, Rust, etc.).
+
+## Requirements
+
+To use this repository, the next tools are needed:
+
+- Unix based OS.
+- Make.
+- Docker.
+
+## Notes
+
+- The repository uses **Make** as main tool for build and use any of the created IDEs. *Make* abstracts, unifies and standardizes the usage of this tool.
+
+- Some **Bash** scripts are provided to ease usage of docker for build, use and remove docker Images and Containers. *Make* uses this scripts and doesn't need to be used directly by the user.
