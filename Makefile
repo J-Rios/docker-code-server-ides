@@ -49,9 +49,9 @@ ifeq ($(and $(IDE),$(WORKSPACE),$(PASSWORD)),)
 	$(info You need to provide IDE name, projects Workspace to mount and)
 	$(info code-server Password to use.)
 	$(info Examples:)
-	$(info - make start IDE=arm_c_cpp WORKSPACE=~/my_projects \
-			PASSWORD=mypassword1234)
 	$(info - make start IDE=x86_64_c_cpp WORKSPACE=~/my_projects \
+			PASSWORD=mypassword1234)
+	$(info - make start IDE=arm_c_cpp WORKSPACE=~/my_projects \
 			PASSWORD=mypassword1234)
 	$(info - make start IDE=python WORKSPACE=~/my_projects \
 			PASSWORD=mypassword1234)

@@ -30,12 +30,8 @@ ARG CMAKE_REPO_URL="https://github.com/Kitware/CMake/releases/download"
 ARG CMAKE_PKG_URL="${CMAKE_REPO_URL}/v${CMAKE_VERSION}/${CMAKE_PKG}"
 
 # Code Server Configuration
-ARG CODESRV_REPOSITORY="https://github.com/coder/code-server"
-ARG CODESRV_VERSION="4.9.1"
-ARG CODESRV_ARCH="linux-amd64"
-ARG CODESRV_PKG="code-server-${CODESRV_VERSION}-${CODESRV_ARCH}.tar.gz"
-ARG CODESRV_PKGS_URL="${CODESRV_REPOSITORY}/releases/download"
-ARG CODESRV_PKG_URL="${CODESRV_PKGS_URL}/v${CODESRV_VERSION}/${CODESRV_PKG}"
+ARG CODESRV_DATA_DIR="/home/$USER/.local/share/code-server/"
+ARG CODESRV_EXT_DIR="/home/$USER/.local/share/code-server/extensions/"
 
 ###############################################################################
 
@@ -46,19 +42,21 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG CURL="curl --progress-bar --show-error"
 
 # Code-Server Extension Install
-ARG CODESRV_INSTALL_EXT="/opt/code-server/bin/code-server --install-extension"
+ARG CODESRV_INSTALL_EXT="code-server --force \
+    --extensions-dir $CODESRV_EXT_DIR --install-extension"
 
 ###############################################################################
 
-# Create the user
-RUN useradd -ms /bin/bash $USER
+# Create User and add it to sudo group
+RUN useradd -m -G sudo -s /bin/bash $USER
 
 # Install the dependencies
 RUN apt-get update && apt-get install --yes apt-utils
 RUN apt-get install --yes \
-    sudo udev dbus-x11 curl git doxygen graphviz build-essential clang \
-    cppcheck valgrind strace libncurses5 libncurses5-dev libncursesw5-dev \
-    libc6 libc6-dev libstdc++6 libudev-dev python3 python3-pip
+    sudo nano procps udev dbus-x11 curl git doxygen graphviz make gdb \
+    build-essential clang clangd cppcheck valgrind strace libsecret-1-0 \
+    libncurses5 libncurses5-dev libncursesw5-dev libc6 libc6-dev libstdc++6 \
+    libudev-dev python3 python3-pip
 
 # Install CMake
 RUN $CURL -o cmake.tar.gz -L "${CMAKE_PKG_URL}" && \
@@ -68,21 +66,19 @@ RUN $CURL -o cmake.tar.gz -L "${CMAKE_PKG_URL}" && \
     rm /cmake.tar.gz
 
 # Install Code-Server
-RUN mkdir -p /opt/code-server && \
-    mkdir -p /home/$USER/.local/share/code-server && \
-    mkdir -p /home/$USER/.config/code-server && \
-    $CURL -o /tmp/code-srv.tar.gz -L "${CODESRV_PKG_URL}" && \
-    tar xf /tmp/code-srv.tar.gz -C /opt/code-server --strip-components=1 && \
-    export PATH="${PATH}:/opt/code-server/bin" && \
-    echo "export PATH=\"${PATH}:/opt/code-server/bin\"" >> $BASHRC && \
-    rm -f /tmp/code-srv.tar.gz
+RUN curl -fsSL https://code-server.dev/install.sh | sh && \
+    mkdir -p $CODESRV_EXT_DIR && \
+    mkdir -p /home/$USER/.local/share/code-server/User && \
+    mkdir -p /home/$USER/.config && \
+    mkdir -p /home/$USER/projects
 
 # Install the vscode extensions
 #RUN $CODESRV_INSTALL_EXT ms-vscode.cpptools-extension-pack@1.2.0
-#RUN $CODESRV_INSTALL_EXT dan-c-underwood.arm@1.7.4
+RUN $CODESRV_INSTALL_EXT llvm-vs-code-extensions.vscode-clangd@0.1.23
+RUN $CODESRV_INSTALL_EXT twxs.cmake@0.0.17
+RUN $CODESRV_INSTALL_EXT jbenden.c-cpp-flylint@1.13.0
 RUN $CODESRV_INSTALL_EXT shardulm94.trailing-spaces@0.4.1
 RUN $CODESRV_INSTALL_EXT webfreak.debug@0.26.0
-#RUN $CODESRV_INSTALL_EXT yzhang.markdown-all-in-one@3.4.3
 RUN $CODESRV_INSTALL_EXT DavidAnson.vscode-markdownlint@0.48.1
 RUN $CODESRV_INSTALL_EXT eamodio.gitlens@12.1.2
 RUN $CODESRV_INSTALL_EXT mhutchie.git-graph@1.30.0
@@ -90,10 +86,15 @@ RUN $CODESRV_INSTALL_EXT donjayamanne.githistory@0.6.19
 RUN $CODESRV_INSTALL_EXT cschlosser.doxdocgen@1.4.0
 RUN $CODESRV_INSTALL_EXT streetsidesoftware.code-spell-checker@2.7.0
 
-# Change ownership permission of all files in User home directory
-RUN chown $USER:$USER -R /home/$USER
+# Clean APT and temporary files
+RUN apt-get clean && \
+    rm -rf /config/* /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 ###############################################################################
+
+# Change ownership permission of all files in User home directory
+#RUN groupadd -r $USER && useradd -r -g $USER $USER
+RUN chown $USER:$USER -R /home/$USER
 
 # Set the container user that will use the image
 ENV DOCKER_USER=$USER
@@ -101,7 +102,7 @@ USER $DOCKER_USER
 ENV HOME=/home/$DOCKER_USER
 WORKDIR /home/$DOCKER_USER
 
-# Launch VSCode at container logging
-CMD echo code-server >> /home/$DOCKER_USER/.bashrc && /bin/bash
+# Setup to launch code-server at container logging
+CMD echo "code-server" >> /home/$DOCKER_USER/.bashrc && /bin/bash
 
 ###############################################################################

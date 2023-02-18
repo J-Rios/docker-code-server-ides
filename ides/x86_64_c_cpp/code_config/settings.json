@@ -3,6 +3,7 @@
     "workbench.startupEditor": "newUntitledFile",
     "window.zoomLevel": -1,
     "workbench.colorTheme": "Default Dark+",
+    "cmake.cmakePath": "/usr/bin/cmake",
     "python.pythonPath": "/usr/bin/python3",
     "python.showStartPage": false
 }
