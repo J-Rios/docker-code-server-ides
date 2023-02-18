@@ -17,9 +17,7 @@ if [ $# -lt 3 ]; then
     echo "You need to provide image name, user name, projects workspace to"
     echo "mount and code-server password to use."
     echo "Examples:"
-    echo "  docker_start arm_c_cpp ~/my_projects mypassword1234"
-    echo "  docker_start x86_64_c_cpp ~/my_projects mypassword1234"
-    echo "  docker_start python ~/my_projects mypassword1234"
+    echo "  docker_start a_image_name ~/my_projects mypassword1234"
     echo ""
     exit 1
 fi
@@ -27,7 +25,8 @@ fi
 ###############################################################################
 
 # Mount points
-WORKSPACE_MOUNT_POINT="/home/user/${WORKSPACE_DIR}"
+WORKSPACE_DIR_NAME=`basename ${WORKSPACE_DIR}`
+WORKSPACE_MOUNT_POINT="/home/user/projects/${WORKSPACE_DIR_NAME}"
 CODE_SETTINGS_TO_MOUNT="${PWD}/ides/${IMAGE_NAME}/code_config/settings.json"
 CODE_SERVER_USER_DATA_DIR="/home/user/.local/share/code-server"
 CODE_SETTINGS_MOUNT_POINT="${CODE_SERVER_USER_DATA_DIR}/User/settings.json"

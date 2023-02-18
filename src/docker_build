@@ -8,22 +8,28 @@
 
 # Get Arguments
 IMAGE_NAME="$1"
-DOCKER_FILE="$2"
+DOCKER_FILE_PATH="$2"
 
 # Check if correct number of arguments has been provided
 if [ $# -lt 2 ]; then
     echo ""
-    echo "You need to provide a image name and Dockerfile to build."
+    echo "You need to provide a image name and directory with Dockerfile to"
+    echo "build."
     echo "Examples:"
-    echo "  docker_build arm_c_cpp ../images/arm_c_cpp/"
-    echo "  docker_build x86_64_c_cpp ../images/x86_64_c_cpp/"
-    echo "  docker_build python ../images/python/"
+    echo "  docker_build a_image_name ./path/to/dockerfile/directory"
     echo ""
     exit 1
 fi
 
 # Launch Docker Image Build
-docker build --network="host" -t $IMAGE_NAME $DOCKER_FILE
+docker build --network="host" -t $IMAGE_NAME $DOCKER_FILE_PATH
+
+# Remove dangling images
+any_dangling_image=`docker images | grep -e "none"`
+if [ ! -z $any_dangling_image]; then
+    echo "Removing dangling images"
+    docker rmi -f $(docker images --filter "dangling=true" -q --no-trunc)
+fi
 
 ###############################################################################
 

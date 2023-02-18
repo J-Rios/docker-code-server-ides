@@ -28,17 +28,23 @@ fi
 for img_name in "$docker_image_name"
 do
     # Get Docker Container ID from Image Name
-    container_id=`docker ps -a | grep -e "{img_name}" | cut -d' ' -f1`
+    container_id=`docker ps -a | grep -e "${img_name}" | cut -d' ' -f1`
 
     # Stop Docker Container
-    docker stop $container_id
+    if [ ! -z "$container_id" ]; then
+        echo "Stopping Container of image ${img_name} (${container_id})..."
+        docker stop $container_id
+    fi
 
     # Get Docker Image ID from name
     image_id=`docker images --format="{{.Repository}} {{.ID}}" | \
               grep "^${img_name} " | cut -d' ' -f2`
 
     # Remove Docker Image
-    docker image rm -f $image_id
+    if [ ! -z "$image_id" ]; then
+        echo "Removing Image ${img_name} (${image_id})..."
+        docker image rm -f $image_id
+    fi
 done
 
 # Remove unused residual images
@@ -46,8 +52,11 @@ done
 #docker image prune
 
 # Remove dangling images
-echo "Removing dangling images"
-docker rmi -f $(docker images --filter "dangling=true" -q --no-trunc)
+any_dangling_image=`docker images | grep -e "none"`
+if [ ! -z $any_dangling_image]; then
+    echo "Removing dangling images..."
+    docker rmi -f $(docker images --filter "dangling=true" -q --no-trunc)
+fi
 
 echo ""
 echo "Image/s removed"
