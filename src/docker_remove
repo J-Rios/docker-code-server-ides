@@ -53,7 +53,7 @@ done
 
 # Remove dangling images
 any_dangling_image=`docker images | grep -e "none"`
-if [ ! -z $any_dangling_image]; then
+if [ ! -z $any_dangling_image ]; then
     echo "Removing dangling images..."
     docker rmi -f $(docker images --filter "dangling=true" -q --no-trunc)
 fi
