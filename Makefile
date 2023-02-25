@@ -8,6 +8,13 @@ help:
 
 ###############################################################################
 
+# Target: make list (List available IDEs)
+.PHONY: list
+list:
+	@ls -1 ides
+
+###############################################################################
+
 # Target: make build (build Docker Image)
 .PHONY: build
 build:

@@ -9,6 +9,9 @@ fields and programming languages (C/C++, Python, Rust, etc.).
 
 ## Usage
 
+Check available IDEs:
+  make list
+
 Build a Docker Image for specific IDE:
   make build IDE=x86_64_c_cpp)
   make build IDE=arm_c_cpp)
