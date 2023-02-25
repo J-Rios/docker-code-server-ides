@@ -73,8 +73,8 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh && \
     mkdir -p /home/$USER/projects
 
 # Install the vscode extensions
-#RUN $CODESRV_INSTALL_EXT ms-vscode.cpptools-extension-pack@1.2.0
 RUN $CODESRV_INSTALL_EXT llvm-vs-code-extensions.vscode-clangd@0.1.23
+RUN $CODESRV_INSTALL_EXT ms-vscode.cmake-tools@1.13.45
 RUN $CODESRV_INSTALL_EXT twxs.cmake@0.0.17
 RUN $CODESRV_INSTALL_EXT jbenden.c-cpp-flylint@1.13.0
 RUN $CODESRV_INSTALL_EXT shardulm94.trailing-spaces@0.4.1
