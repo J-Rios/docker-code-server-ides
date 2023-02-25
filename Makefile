@@ -2,12 +2,14 @@
 ###############################################################################
 
 # Target: make help (Show usage help information)
+.PHONY: help
 help:
-	@cat README.md
+	@cat USAGE.md
 
 ###############################################################################
 
 # Target: make build (build Docker Image)
+.PHONY: build
 build:
 ifndef IDE
 	$(info )
@@ -24,24 +26,8 @@ endif
 
 ###############################################################################
 
-# Target: make remove (remove all previously builds)
-remove:
-ifndef IDE
-	$(info )
-	$(info You need to provide name of IDE to build.)
-	$(info Examples:)
-	$(info - make remove IDE=x86_64_c_cpp)
-	$(info - make remove IDE=arm_c_cpp)
-	$(info - make remove IDE=python)
-	$(info )
-	$(error Invalid command)
-endif
-	@chmod +x src/docker_remove
-	@src/docker_remove $(IDE)
-
-###############################################################################
-
 # Target: make run (run a Docker Image)
+.PHONY: start
 start:
 # Following line is == ifndef IDE || WORKSPACE || PASSWORD
 ifeq ($(and $(IDE),$(WORKSPACE),$(PASSWORD)),)
@@ -64,6 +50,7 @@ endif
 ###############################################################################
 
 # Target: make stop (stop a Docker Image)
+.PHONY: stop
 stop:
 ifndef IDE
 	$(info )
@@ -77,5 +64,23 @@ ifndef IDE
 endif
 	@chmod +x src/docker_stop
 	@src/docker_stop $(IDE)
+
+###############################################################################
+
+# Target: make remove (remove all previously builds)
+.PHONY: remove
+remove:
+ifndef IDE
+	$(info )
+	$(info You need to provide name of IDE to build.)
+	$(info Examples:)
+	$(info - make remove IDE=x86_64_c_cpp)
+	$(info - make remove IDE=arm_c_cpp)
+	$(info - make remove IDE=python)
+	$(info )
+	$(error Invalid command)
+endif
+	@chmod +x src/docker_remove
+	@src/docker_remove $(IDE)
 
 ###############################################################################
