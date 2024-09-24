@@ -15,7 +15,7 @@ list:
 
 ###############################################################################
 
-# Target: make build (build Docker Image)
+# Target: make build (build Image)
 .PHONY: build
 build:
 ifndef IDE
@@ -28,12 +28,12 @@ ifndef IDE
 	$(info )
 	$(error Invalid command)
 endif
-	@chmod +x src/docker_build
-	@src/docker_build $(IDE) ides/$(IDE)
+	@chmod +x src/container_build
+	@src/container_build $(IDE) ides/$(IDE)
 
 ###############################################################################
 
-# Target: make run (run a Docker Image)
+# Target: make run (run Container)
 .PHONY: start
 start:
 # Following line is == ifndef IDE || WORKSPACE || PASSWORD
@@ -51,12 +51,12 @@ ifeq ($(and $(IDE),$(WORKSPACE),$(PASSWORD)),)
 	$(info )
 	$(error Invalid command)
 endif
-	@chmod +x src/docker_start
-	@src/docker_start $(IDE) $(WORKSPACE) $(PASSWORD)
+	@chmod +x src/container_start
+	@src/container_start $(IDE) $(WORKSPACE) $(PASSWORD)
 
 ###############################################################################
 
-# Target: make stop (stop a Docker Image)
+# Target: make stop (stop Container)
 .PHONY: stop
 stop:
 ifndef IDE
@@ -69,8 +69,8 @@ ifndef IDE
 	$(info )
 	$(error Invalid command)
 endif
-	@chmod +x src/docker_stop
-	@src/docker_stop $(IDE)
+	@chmod +x src/container_stop
+	@src/container_stop $(IDE)
 
 ###############################################################################
 
@@ -87,7 +87,7 @@ ifndef IDE
 	$(info )
 	$(error Invalid command)
 endif
-	@chmod +x src/docker_remove
-	@src/docker_remove $(IDE)
+	@chmod +x src/container_remove
+	@src/container_remove $(IDE)
 
 ###############################################################################

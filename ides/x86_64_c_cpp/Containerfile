@@ -1,5 +1,6 @@
 #
-# Docker File for x86 and AMD64 devices C/C++ Development Environment.
+# OCI Container File for x86 and AMD64 devices C/C++ Development
+# Environment.
 #
 # It Install all the needed tools on top of a base Linux image to allow
 # software development for x86 and AMD64 processors using C/C++.
@@ -97,12 +98,12 @@ RUN apt-get clean && \
 RUN chown $USER:$USER -R /home/$USER
 
 # Set the container user that will use the image
-ENV DOCKER_USER=$USER
-USER $DOCKER_USER
-ENV HOME=/home/$DOCKER_USER
-WORKDIR /home/$DOCKER_USER
+ENV CONTAINER_USER=$USER
+USER $CONTAINER_USER
+ENV HOME=/home/$CONTAINER_USER
+WORKDIR /home/$CONTAINER_USER
 
 # Setup to launch code-server at container logging
-CMD echo "code-server" >> /home/$DOCKER_USER/.bashrc && /bin/bash
+CMD echo "code-server" >> /home/$CONTAINER_USER/.bashrc && /bin/bash
 
 ###############################################################################

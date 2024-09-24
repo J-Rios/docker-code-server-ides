@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+#
+# Description:
+# Remove a specified Container Image.
+#
+
+###############################################################################
+
+# Get Container images names from each provided argument
+container_image_name=()
+for i in "$@"
+do
+    container_image_name+=("${i}")
+done
+
+# Check if any Image has been provided
+if [ ${#container_image_name[@]} -eq 0 ]; then
+    echo ""
+    echo "You need to provide a Container Image ID to remove"
+    echo "Examples:"
+    echo "  container_remove a_image_name"
+    echo "  container_remove a_image_name another_one why_not_other"
+    echo ""
+    exit 1
+fi
+
+# For each Image ID provided
+for img_name in "$container_image_name"
+do
+    # Get Container ID from Image Name
+    container_id=`podman ps -a | grep -e "${img_name}" | cut -d' ' -f1`
+
+    # Stop Container
+    if [ ! -z "$container_id" ]; then
+        echo "Stopping Container of image ${img_name} (${container_id})..."
+        podman stop $container_id
+    fi
+
+    # Get Image ID from name
+    image_id=`podman images --format="{{.Repository}} {{.ID}}" | \
+              grep "^${img_name} " | cut -d' ' -f2`
+
+    # Remove Image
+    if [ ! -z "$image_id" ]; then
+        echo "Removing Image ${img_name} (${image_id})..."
+        podman image rm -f $image_id
+    fi
+done
+
+# Remove unused residual images
+#echo "Removing unused residual images"
+#podman image prune
+
+# Remove dangling images
+any_dangling_image=`podman images | grep -e "none"`
+if [ ! -z $any_dangling_image ]; then
+    echo "Removing dangling images..."
+    podman rmi -f $(podman images --filter "dangling=true" -q --no-trunc)
+fi
+
+echo ""
+echo "Image/s removed"
+echo ""
+
+exit 0

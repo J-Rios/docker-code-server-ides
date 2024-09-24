@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#
+# Description:
+# Stop a OCI Container from Image Name.
+#
+
+###############################################################################
+
+# Get Images names from each provided argument
+container_image_name=()
+for i in "$@"
+do
+    container_image_name+=("${i}")
+done
+
+# Check if any Image has been provided
+if [ ${#container_image_name[@]} -eq 0 ]; then
+    echo ""
+    echo "You need to provide an Image Name to stop"
+    echo "Examples:"
+    echo "  container_stop a_image_name"
+    echo "  container_stop a_image_name another_one why_not_other"
+    echo ""
+    exit 1
+fi
+
+# For each Image Name provided
+for img_name in "$container_image_name"
+do
+    # Get Container ID from Image Name
+    container_id=`podman ps -a | grep -e "${img_name}" | cut -d' ' -f1`
+
+    # Stop Container
+    if [ ! -z "$container_id" ]; then
+        echo "Stopping Container of image ${img_name} (${container_id})..."
+        podman stop $container_id
+    fi
+done
+
+###############################################################################
+
+echo ""
+echo "Container Stopped"
+echo ""
+
+exit 0
