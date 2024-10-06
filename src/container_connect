@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# Description:
+# Connect as "root" to a running specified Container by name.
+#
+
+###############################################################################
+
+# Get Arguments
+CONTAINER_IMAGE_NAME="$1"
+
+# Check if correct number of arguments has been provided
+if [ $# -lt 1 ]; then
+    echo ""
+    echo "You need to provide a Container Image ID to connect to"
+    echo "Examples:"
+    echo "  container_connect a_image_name"
+    echo "  container_connect a_image_name"
+    echo ""
+    exit 1
+fi
+
+# Get Container ID from Image Name and connect to it as root
+container_id=`podman ps -a | grep -e "${CONTAINER_IMAGE_NAME}" | cut -d' ' -f1`
+podman exec -it --privileged --workdir /root --user root $container_id bash
+
+exit 0

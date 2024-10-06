@@ -71,6 +71,24 @@ endif
 
 ###############################################################################
 
+# Target: make connect (connect Container)
+.PHONY: connect
+connect:
+ifndef IDE
+	$(info )
+	$(info You need to provide name of IDE to connect to.)
+	$(info Examples:)
+	$(info - make connect IDE=arm_c_cpp)
+	$(info - make connect IDE=x86_64_c_cpp)
+	$(info - make connect IDE=python)
+	$(info )
+	$(error Invalid command)
+endif
+	@chmod +x src/container_connect
+	@src/container_connect $(IDE)
+
+###############################################################################
+
 # Target: make remove (remove all previously builds)
 .PHONY: remove
 remove:
