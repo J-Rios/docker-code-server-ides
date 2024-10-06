@@ -2,6 +2,7 @@
 ### Directories
 
 # Project Specific
+.cache/
 .vscode/
 build/
 
