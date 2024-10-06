@@ -13,22 +13,26 @@ Check available IDEs:
   make list
 
 Build an Image for specific IDE:
-  make build IDE=x86_64_c_cpp
-  make build IDE=arm_c_cpp
+  make build IDE=c_cpp
+  make build IDE=c_cpp_arm
   make build IDE=python
 
 Launch an IDE Container:
-  make start IDE=x86_64_c_cpp PASSWORD=pass1234 WORKSPACE=~/my_projects
-  make start IDE=arm_c_cpp PASSWORD=pass1234 WORKSPACE=~/my_projects
+  make start IDE=c_cpp PASSWORD=pass1234 WORKSPACE=~/my_projects
+  make start IDE=c_cpp_arm PASSWORD=pass1234 WORKSPACE=~/my_projects
   make start IDE=python PASSWORD=pass1234 WORKSPACE=~/my_projects
 
 Stop a running Container of an IDE:
-  make stop IDE=x86_64_c_cpp
-  make stop IDE=arm_c_cpp
+  make stop IDE=c_cpp
+  make stop IDE=c_cpp_arm
   make stop IDE=python
 
-Remove the Image of an IDE:
-  make remove IDE=x86_64_c_cpp
-  make remove IDE=arm_c_cpp
-  make remove IDE=python
+Connect as "root" into a running Container of an IDE:
+  make connect IDE=c_cpp
+  make connect IDE=c_cpp_arm
+  make connect IDE=python
 
+Remove the Image of an IDE:
+  make remove IDE=c_cpp
+  make remove IDE=c_cpp_arm
+  make remove IDE=python
