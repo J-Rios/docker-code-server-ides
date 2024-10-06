@@ -36,23 +36,20 @@ endif
 # Target: make run (run Container)
 .PHONY: start
 start:
-# Following line is == ifndef IDE || WORKSPACE || PASSWORD
-ifeq ($(and $(IDE),$(WORKSPACE),$(PASSWORD)),)
+ifndef IDE
 	$(info )
 	$(info You need to provide IDE name, projects Workspace to mount and)
 	$(info code-server Password to use.)
 	$(info Examples:)
-	$(info - make start IDE=x86_64_c_cpp WORKSPACE=~/my_projects \
-			PASSWORD=mypassword1234)
-	$(info - make start IDE=arm_c_cpp WORKSPACE=~/my_projects \
-			PASSWORD=mypassword1234)
-	$(info - make start IDE=python WORKSPACE=~/my_projects \
-			PASSWORD=mypassword1234)
+	$(info - make start IDE=x86_64_c_cpp PASSWORD=mypassword1234)
+	$(info - make start IDE=python PASSWORD=mypassword5678)
+	$(info - make start IDE=x86_64_c_cpp PASSWORD=mypassword1234 \
+			WORKSPACE=~/my_projects)
 	$(info )
 	$(error Invalid command)
 endif
 	@chmod +x src/container_start
-	@src/container_start $(IDE) $(WORKSPACE) $(PASSWORD)
+	@src/container_start $(IDE) $(PASSWORD) $(WORKSPACE)
 
 ###############################################################################
 

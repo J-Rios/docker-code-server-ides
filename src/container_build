@@ -23,12 +23,16 @@ fi
 
 # Launch Container Image Build
 podman build --network="host" -t $IMAGE_NAME $CONTAINER_FILE_PATH
+BUILD_RESULT=$?
 
-# Remove dangling images
-any_dangling_image=`podman images | grep -e "none"`
-if [ ! -z "${any_dangling_image}" ]; then
-    echo "Removing dangling images"
-    podman rmi -f $(podman images --filter "dangling=true" -q --no-trunc)
+# Remove dangling images if build succes
+if [ $BUILD_RESULT -eq 0 ]; then
+    echo "Build success"
+    any_dangling_image=`podman images | grep -e "none"`
+    if [ ! -z "${any_dangling_image}" ]; then
+        echo "Removing dangling images"
+        podman rmi -f $(podman images --filter "dangling=true" -q --no-trunc)
+    fi
 fi
 
 ###############################################################################

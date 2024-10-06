@@ -14,7 +14,7 @@
 ###############################################################################
 
 # Base OS
-FROM debian:bullseye
+FROM bitnami/minideb:bullseye
 
 # System User Name
 ARG USER="user"
@@ -54,10 +54,11 @@ RUN useradd -m -G sudo -s /bin/bash $USER
 # Install the dependencies
 RUN apt-get update && apt-get install --yes apt-utils
 RUN apt-get install --yes \
-    sudo nano procps udev dbus-x11 curl git doxygen graphviz make gdb \
-    build-essential clang clangd cppcheck valgrind strace libsecret-1-0 \
-    libncurses5 libncurses5-dev libncursesw5-dev libc6 libc6-dev libstdc++6 \
-    libudev-dev python3 python3-pip
+    sudo nano htop wget procps udev dbus-x11 curl git graphviz make gcc gdb \
+    ccache build-essential clang clangd cppcheck valgrind strace \
+    libsecret-1-0 libncurses5 libncurses5-dev libncursesw5-dev libc6 \
+    libc6-dev libstdc++6 libudev-dev doxygen clang-format clang-tidy \
+    python3 python3-pip
 
 # Install CMake
 RUN $CURL -o cmake.tar.gz -L "${CMAKE_PKG_URL}" && \
@@ -88,8 +89,21 @@ RUN $CODESRV_INSTALL_EXT cschlosser.doxdocgen@1.4.0
 RUN $CODESRV_INSTALL_EXT streetsidesoftware.code-spell-checker@3.0.1
 
 # Clean APT and temporary files
-RUN apt-get clean && \
+RUN apt-get clean --yes && \
     rm -rf /config/* /tmp/* /var/lib/apt/lists/* /var/tmp/*
+
+# Update ccache symlinks
+RUN /usr/sbin/update-ccache-symlinks
+
+# User setup at Bash logging
+ARG BASHRC="/etc/bash.bashrc"
+RUN echo '' >> $BASHRC && \
+    echo '# Setup PATH' >> $BASHRC && \
+    echo 'export PATH="/usr/lib/ccache:$PATH"' >> $BASHRC && \
+    echo '' >> $BASHRC && \
+    echo '# Extra Environment Variables' >> $BASHRC && \
+    echo 'export NPROC=$(nproc)' >> $BASHRC && \
+    echo '' >> $BASHRC
 
 ###############################################################################
 
@@ -98,12 +112,12 @@ RUN apt-get clean && \
 RUN chown $USER:$USER -R /home/$USER
 
 # Set the container user that will use the image
-ENV CONTAINER_USER=$USER
-USER $CONTAINER_USER
-ENV HOME=/home/$CONTAINER_USER
-WORKDIR /home/$CONTAINER_USER
+USER $USER
+ENV HOME=/home/$USER
+WORKDIR /home/$USER
 
-# Setup to launch code-server at container logging
-CMD echo "code-server" >> /home/$CONTAINER_USER/.bashrc && /bin/bash
+# Setup to launch code-server through bash at container logging
+#CMD ["/bin/bash", "-c", "code-server & exec /bin/bash"]
+CMD ["/bin/bash", "-c", "code-server; exec /bin/bash"]
 
 ###############################################################################
