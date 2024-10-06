@@ -6,7 +6,6 @@
 #
 # Main components that are installed and needed for the development are:
 # - Rust Toolchains (All required tools for development)
-# - CMake & Make (Build the project)
 # - Code-Server + Extensions (Write code and use other tools as backend)
 #
 
