@@ -1,0 +1,115 @@
+#
+# OCI Container File for Rust Development Environment.
+#
+# It Install all the needed tools on top of a base Linux image to allow
+# software development using Rust.
+#
+# Main components that are installed and needed for the development are:
+# - Rust Toolchains (All required tools for development)
+# - Code-Server + Extensions (Write code and use other tools as backend)
+#
+
+###############################################################################
+
+# Base OS
+FROM debian:bullseye
+
+# System User Name
+ARG USER="user"
+
+###############################################################################
+
+# Code Server Configuration
+ARG CODESRV_DATA_DIR="/home/$USER/.local/share/code-server/"
+ARG CODESRV_EXT_DIR="/home/$USER/.local/share/code-server/extensions/"
+
+###############################################################################
+
+# Set Environment Variable for no user interaction with APT
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Curl Command Setup
+ARG CURL="curl --progress-bar --show-error"
+
+# Code-Server Extension Install
+ARG CODESRV_INSTALL_EXT="code-server --force \
+    --extensions-dir $CODESRV_EXT_DIR --install-extension"
+
+###############################################################################
+
+# Create User and add it to sudo group
+RUN useradd -m -G sudo -s /bin/bash $USER
+
+# Install the dependencies
+RUN apt-get update && apt-get install --yes apt-utils
+RUN apt-get install --yes \
+    build-essential cmake libssl-dev libgtk-3-dev libc6-dev libudev-dev \
+    sudo nano htop wget procps udev dbus-x11 curl git graphviz make gcc gdb \
+    ccache strace
+
+#libsecret-1-0 libncurses5 libncurses5-dev libncursesw5-dev libc6
+
+# Install Rust Toolchain
+USER $USER
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/home/${USER}/.cargo/bin:${PATH}"
+RUN rustup default stable
+RUN rustc --version
+USER root
+
+# Install Code-Server
+RUN curl -fsSL https://code-server.dev/install.sh | sh && \
+    mkdir -p $CODESRV_EXT_DIR && \
+    mkdir -p /home/$USER/.local/share/code-server/User && \
+    mkdir -p /home/$USER/.config && \
+    mkdir -p /home/$USER/projects
+
+# Install the vscode extensions
+RUN $CODESRV_INSTALL_EXT vadimcn.vscode-lldb 1.11.0
+RUN $CODESRV_INSTALL_EXT rust-lang.rust-analyzer@0.4.2135
+RUN $CODESRV_INSTALL_EXT franneck94.vscode-rust-config@1.2.0
+RUN $CODESRV_INSTALL_EXT serayuzgur.crates@0.6.7
+RUN $CODESRV_INSTALL_EXT Swellaby.vscode-rust-test-adapter@0.11.1
+RUN $CODESRV_INSTALL_EXT tamasfe.even-better-toml@0.19.1
+RUN $CODESRV_INSTALL_EXT JScearcy.rust-doc-viewer@4.2.0
+RUN $CODESRV_INSTALL_EXT shardulm94.trailing-spaces@0.4.1
+RUN $CODESRV_INSTALL_EXT DavidAnson.vscode-markdownlint@0.56.0
+RUN $CODESRV_INSTALL_EXT eamodio.gitlens@15.5.1
+RUN $CODESRV_INSTALL_EXT mhutchie.git-graph@1.30.0
+RUN $CODESRV_INSTALL_EXT donjayamanne.githistory@0.6.20
+RUN $CODESRV_INSTALL_EXT cschlosser.doxdocgen@1.4.0
+RUN $CODESRV_INSTALL_EXT streetsidesoftware.code-spell-checker@3.0.1
+
+# Clean APT and temporary files
+RUN apt-get clean --yes && \
+    rm -rf /config/* /tmp/* /var/lib/apt/lists/* /var/tmp/*
+
+# Update ccache symlinks
+RUN /usr/sbin/update-ccache-symlinks
+
+# User setup at Bash logging
+ARG BASHRC="/etc/bash.bashrc"
+RUN echo '' >> $BASHRC && \
+    echo '# Setup PATH' >> $BASHRC && \
+    echo 'export PATH="/home/${USER}/.cargo/bin:${PATH}"' >> $BASHRC && \
+    echo 'export PATH="/usr/lib/ccache:${PATH}"' >> $BASHRC && \
+    echo '' >> $BASHRC && \
+    echo '# Extra Environment Variables' >> $BASHRC && \
+    echo 'export NPROC=$(nproc)' >> $BASHRC && \
+    echo '' >> $BASHRC
+
+###############################################################################
+
+# Change ownership permission of all files in User home directory
+#RUN groupadd -r $USER && useradd -r -g $USER $USER
+RUN chown $USER:$USER -R /home/$USER
+
+# Set the container user that will use the image
+USER $USER
+ENV HOME=/home/$USER
+WORKDIR /home/$USER
+
+# Setup to launch code-server through bash at container logging
+CMD ["/bin/bash", "-c", "code-server; exec /bin/bash"]
+
+###############################################################################

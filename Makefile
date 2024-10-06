@@ -25,6 +25,7 @@ ifndef IDE
 	$(info - make build IDE=c_cpp)
 	$(info - make build IDE=c_cpp_arm)
 	$(info - make build IDE=python)
+	$(info - make build IDE=rust)
 	$(info )
 	$(error Invalid command)
 endif
@@ -43,6 +44,7 @@ ifndef IDE
 	$(info Examples:)
 	$(info - make start IDE=c_cpp PASSWORD=mypassword1234)
 	$(info - make start IDE=python PASSWORD=mypassword5678)
+	$(info - make start IDE=rust PASSWORD=mypasswordABCDE)
 	$(info - make start IDE=c_cpp PASSWORD=mypassword1234 \
 			WORKSPACE=~/my_projects)
 	$(info )
@@ -63,6 +65,7 @@ ifndef IDE
 	$(info - make stop IDE=c_cpp)
 	$(info - make stop IDE=c_cpp_arm)
 	$(info - make stop IDE=python)
+	$(info - make stop IDE=rust)
 	$(info )
 	$(error Invalid command)
 endif
@@ -81,6 +84,7 @@ ifndef IDE
 	$(info - make connect IDE=c_cpp)
 	$(info - make connect IDE=c_cpp_arm)
 	$(info - make connect IDE=python)
+	$(info - make connect IDE=rust)
 	$(info )
 	$(error Invalid command)
 endif
@@ -99,6 +103,7 @@ ifndef IDE
 	$(info - make remove IDE=c_cpp)
 	$(info - make remove IDE=c_cpp_arm)
 	$(info - make remove IDE=python)
+	$(info - make remove IDE=rust)
 	$(info )
 	$(error Invalid command)
 endif
