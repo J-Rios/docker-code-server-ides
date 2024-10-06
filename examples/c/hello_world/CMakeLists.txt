@@ -25,7 +25,7 @@ set(PRJ_OUT_FILE hello_world)
 ### Build Configuration ###
 
 # Enable Assembly
-enable_language(ASM)
+#enable_language(ASM)
 
 # Global Defines to be passed to Compiler (-DFLAG=X)
 add_compile_definitions(
